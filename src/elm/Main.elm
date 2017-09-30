@@ -2,27 +2,13 @@ module Main exposing (..)
 
 import InitialGrid exposing (..)
 import Types.Player exposing (..)
-import Components.Board exposing (..)
+import Components.Board.Main exposing (..)
 import Types.Space exposing (..)
 import Types.Pieces exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Attributes as HA
 import Html.Events exposing (onClick)
-import CssModules exposing (css)
-
-
--- component import example
-
-import Components.Hello exposing (hello)
-
-
--- CssModules example
-{ class } =
-    css "./test.css"
-        { black = "" }
-
-
 
 -- APP
 
@@ -67,15 +53,6 @@ update msg model =
 
 view : Grid -> Html Msg
 view model =
-    renderGrid model
+    div [ class "center" ]
+        [ renderGrid model ]
 
--- CSS STYLES
-
-
-styles : { img : List ( String, String ) }
-styles =
-    { img =
-        [ ( "width", "33%" )
-        , ( "border", "4px solid #337AB7" )
-        ]
-    }

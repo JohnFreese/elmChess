@@ -1,3 +1,8 @@
 .black {
     background-color: black;
 }
+
+.center {
+    width: 100%;
+    text-align: center;
+}
