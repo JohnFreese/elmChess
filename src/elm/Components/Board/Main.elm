@@ -1,25 +1,29 @@
-module Components.Board exposing (..)
+module Components.Board.Main exposing (..)
 
 import Types.Space exposing (..)
-import Types.Player as Player
-import Types.Pieces as Piece
+import Types.Player exposing (..)
+import Types.Pieces exposing (..)
 import List as L
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import String
+import Components.Board.Styles exposing (..)
 
 
 renderSpace : Space -> Html a
 renderSpace space =
     let
+        -- colour =
+        --     Player.colorToString space.colour
+
         colour =
-            Player.colorToString space.colour
+            case space.colour of
+                White -> .white
+                Black -> .black
 
         piece =
             \mPiece ->
                 case mPiece of
                     Just piece ->
-                        Piece.generateText piece
+                        generateText piece
 
                     Nothing ->
                         ""
@@ -37,5 +41,5 @@ renderRow spaces =
 renderGrid : Grid -> Html a
 renderGrid grid =
     div
-        []
+        [ class .grid ]
         (L.map (\row -> ul [] (renderRow row)) grid)
