@@ -7,7 +7,7 @@ type Colour
 
 
 type alias Player =
-    { color : Colour
+    { colour : Colour
     , points : Int
     , castle : Bool
     }

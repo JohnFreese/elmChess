@@ -1,23 +1,40 @@
 module Components.Board.Main exposing (..)
 
+import Array as A
 import Types.Space exposing (..)
 import Types.Player exposing (..)
 import Types.Pieces exposing (..)
 import List as L
 import Html exposing (..)
 import Components.Board.Styles exposing (..)
+import Html.Attributes as HA
+import Html.Events exposing (onClick)
 
 
-renderSpace : Space -> Html a
+type Msg
+    = GenMoves Space
+    | MakeMove Space
+
+renderSpace : Space -> Html Msg
 renderSpace space =
     let
         -- colour =
         --     Player.colorToString space.colour
+        action =
+            case space.active of
+                False -> onClick (GenMoves space)
+                True -> onClick (MakeMove space)
 
         colour =
-            case space.colour of
-                White -> .white
-                Black -> .black
+            if space.active then
+                .green
+            else
+                case space.colour of
+                    White ->
+                        .white
+
+                    Black ->
+                        .black
 
         piece =
             \mPiece ->
@@ -29,17 +46,17 @@ renderSpace space =
                         ""
     in
         li
-            [ class colour ]
+            [ class colour , action]
             [ text (piece space.piece) ]
 
 
-renderRow : List Space -> List (Html a)
+renderRow : A.Array Space -> List (Html Msg)
 renderRow spaces =
-    L.map renderSpace spaces
+    A.toList (A.map renderSpace spaces)
 
 
-renderGrid : Grid -> Html a
+renderGrid : Grid -> Html Msg
 renderGrid grid =
     div
         [ class .grid ]
-        (L.map (\row -> ul [] (renderRow row)) grid)
+        (A.toList (A.map (\row -> ul [] (renderRow row)) grid.data))

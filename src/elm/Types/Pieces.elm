@@ -32,3 +32,24 @@ generateText piece =
 
         Queen _ ->
             "Q"
+
+getOwner : Piece -> Player
+getOwner piece =
+    case piece of
+        Pawn owner ->
+            owner
+
+        Rook owner ->
+            owner
+
+        Knight owner ->
+            owner
+
+        Bishop owner ->
+            owner
+
+        King owner ->
+            owner
+
+        Queen owner ->
+            owner

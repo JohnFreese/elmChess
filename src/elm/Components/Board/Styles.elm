@@ -6,5 +6,6 @@ import CssModules exposing (css)
     css "./Components/Board/styles.css"
         { black = ""
         , white = ""
+        , green = ""
         , grid = ""
         }

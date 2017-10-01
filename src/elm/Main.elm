@@ -1,5 +1,9 @@
 module Main exposing (..)
 
+import Engine.MovePiece exposing (..)
+import Maybe exposing (..)
+import Engine.Utils exposing (..)
+import Engine.GenMoves exposing (..)
 import InitialGrid exposing (..)
 import Types.Player exposing (..)
 import Components.Board.Main exposing (..)
@@ -10,10 +14,11 @@ import Html.Attributes exposing (..)
 import Html.Attributes as HA
 import Html.Events exposing (onClick)
 
+
 -- APP
 
 
-main : Program Never Grid Msg
+main : Program Never Model Msg
 main =
     Html.beginnerProgram { model = model, view = view, update = update }
 
@@ -21,38 +26,60 @@ main =
 
 -- MODEL
 
-model : Grid
+model : Model
 model =
-    initialGrid
+    Model initialGrid (Player White 0 True) Nothing Nothing
 
 
 
 -- UPDATE
+{-
+   type GenMove
+       = GenMove Space
+
+   type MakeMove
+       = MakeMove Space Space
+-}
 
 
-type Msg
-    = NoOp
-    | Increment
-
-
-update : Msg -> Grid -> Grid
+update : Msg -> Model -> Model
 update msg model =
-    case msg of
-        NoOp ->
-            model
+    let
+        freshGrid = resetGrid (withDefault [] model.activeSpaces) model.grid
+    in
+        case msg of
+            GenMoves space ->
+                case space.piece of
+                    Nothing ->
+                        model
 
-        Increment ->
-            model
+                    Just piece ->
+                        case (generateMoves space freshGrid) of
+                            Nothing ->
+                                { model
+                                    | selectedSpace = Just space
+                                    , activeSpaces = Nothing
+                                }
 
+                            Just ( newGrid, moves ) ->
+                                { model
+                                    | selectedSpace = Just space
+                                    , grid = newGrid
+                                    , activeSpaces = Just moves
+                                }
 
+            MakeMove destination ->
+                case model.selectedSpace of
+                    Nothing -> model
+                    Just origin ->
+                        movePiece origin destination model
 
 -- VIEW
 -- Html is defined as: elem [ attribs ][ children ]
 -- CSS can be applied via class names or inline style attrib
 
 
-view : Grid -> Html Msg
+view : Model -> Html Msg
 view model =
     div [ class "center" ]
-        [ renderGrid model ]
-
+        [ renderGrid model.grid ]
