@@ -87,6 +87,13 @@ if (isDev === true) {
             {
                 test: /\.sc?ss$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+            },
+            {
+              test: /\.(jpe?g|png|gif|svg)$/i,
+              use: [
+                'url-loader?limit=10000',
+                'img-loader'
+              ]
             }]
         }
     });

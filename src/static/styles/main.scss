@@ -8,3 +8,43 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
     width: 100vw;
     height: 100vh;
 }
+
+.white-bishop {
+  content: url("../img/whiteBishop.png");
+}
+
+.white-king {
+  content: "../img/whiteKing.png";
+}
+
+.white-pawn {
+  content: "img/whitePawn.png";
+}
+
+.white-queen {
+  content: "img/whiteQueen.png";
+}
+
+.white-rook {
+  content: "img/whiteRook.png";
+}
+
+.black-bishop {
+  content: "img/blackBishop.png";
+}
+
+.black-king {
+  content: "img/blackKing.png";
+}
+
+.black-pawn {
+  content: "img/blackPawn.png";
+}
+
+.black-queen {
+  content: "img/blackQueen.png";
+}
+
+.black-rook {
+  content: "img/blackRook.png";
+}

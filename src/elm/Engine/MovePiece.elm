@@ -37,9 +37,11 @@ movePiece origin destination currentModel =
             Nothing ->
                 { currentModel
                     | grid = newGrid
+                    , selectedSpace = Nothing
                 }
 
             Just _ ->
                 { currentModel
                     | grid = newGrid
+                    , selectedSpace = Nothing
                 }

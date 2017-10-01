@@ -1,6 +1,6 @@
 module Types.Pieces exposing (..)
 
-import Types.Player exposing (Player)
+import Types.Player exposing (..)
 
 
 type Piece
@@ -32,6 +32,34 @@ generateText piece =
 
         Queen _ ->
             "Q"
+
+generateSrc : Piece -> String
+generateSrc piece =
+  let
+      baseClass = \p -> case p.colour of
+        White -> "static/img/white"
+        Black -> "static/img/black"
+  in
+      
+    case piece of
+        Pawn player ->
+            (baseClass player) ++ "Pawn.png"
+
+        Rook player ->
+            (baseClass player) ++ "Rook.png"
+
+        Knight player ->
+            (baseClass player) ++ "King.png"
+
+        Bishop player ->
+            (baseClass player) ++ "Bishop.png"
+
+        King player ->
+            (baseClass player) ++ "King.png"
+
+        Queen player ->
+            (baseClass player) ++ "Queen.png"
+
 
 getOwner : Piece -> Player
 getOwner piece =

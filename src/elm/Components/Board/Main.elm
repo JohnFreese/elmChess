@@ -35,19 +35,17 @@ renderSpace space =
 
                     Black ->
                         .black
-
-        piece =
-            \mPiece ->
-                case mPiece of
-                    Just piece ->
-                        generateText piece
-
-                    Nothing ->
-                        ""
+  
+        piece = case space.piece of
+          Nothing ->
+            span [] []
+          
+          Just aPiece -> 
+            img [ HA.src (generateSrc aPiece) ] []
     in
         li
             [ class colour , action]
-            [ text (piece space.piece) ]
+            [ piece ]
 
 
 renderRow : A.Array Space -> List (Html Msg)

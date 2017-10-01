@@ -8,11 +8,9 @@ import InitialGrid exposing (..)
 import Types.Player exposing (..)
 import Components.Board.Main exposing (..)
 import Types.Space exposing (..)
-import Types.Pieces exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Attributes as HA
-import Html.Events exposing (onClick)
 
 
 -- APP
@@ -32,20 +30,11 @@ model =
 
 
 
--- UPDATE
-{-
-   type GenMove
-       = GenMove Space
-
-   type MakeMove
-       = MakeMove Space Space
--}
-
-
 update : Msg -> Model -> Model
 update msg model =
     let
         freshGrid = resetGrid (withDefault [] model.activeSpaces) model.grid
+        freshModel = { model | grid = freshGrid}
     in
         case msg of
             GenMoves space ->
@@ -72,7 +61,7 @@ update msg model =
                 case model.selectedSpace of
                     Nothing -> model
                     Just origin ->
-                        movePiece origin destination model
+                        movePiece origin destination freshModel
 
 -- VIEW
 -- Html is defined as: elem [ attribs ][ children ]
