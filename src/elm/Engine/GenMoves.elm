@@ -124,6 +124,14 @@ queenMoves player space grid =
     if List.isEmpty list then Nothing else Just list
 
 
+kingMoves : Player -> Space -> Grid -> Maybe (List Space)
+kingMoves player space grid =
+  [North, South, East, West, NorthEast, NorthWest, SouthEast, SouthWest]
+    |> List.map (\d -> increment (Just space) d grid)
+    |> List.map (andThen (checkSpace player))
+    |> parseMoves
+      
+
 generateMoves : Space -> Grid -> Maybe (Grid, (List Space))
 generateMoves space grid =
     case space.piece of
@@ -152,7 +160,7 @@ generateMoves space grid =
                             queenMoves player space grid
 
                         King player ->
-                            Nothing
+                            kingMoves player space grid
             in
                 case moves of
                     Nothing ->
