@@ -131,6 +131,33 @@ kingMoves player space grid =
     |> List.map (andThen (checkSpace player))
     |> parseMoves
       
+knightMoves : Player -> Space -> Grid -> Maybe (List Space)
+knightMoves player space grid =
+  let
+      northPole = Just space 
+        |> \s -> increment s North grid 
+        |> \s -> increment s North grid 
+
+      southPole = Just space
+        |> \s -> increment s South grid
+        |> \s -> increment s South grid
+
+      eastPole = Just space
+        |> \s -> increment s East grid
+        |> \s -> increment s East grid
+
+      westPole = Just space
+        |> \s -> increment s West grid
+        |> \s -> increment s West grid
+
+      incrementEW = \spc -> List.map (\dir -> increment spc dir grid) [East, West]
+      incrementNS = \spc -> List.map (\dir -> increment spc dir grid) [North, South]
+  in
+    [(incrementEW northPole), (incrementEW southPole), (incrementNS eastPole), (incrementNS westPole)]
+      |> concatMap identity
+      |> List.map (andThen (checkSpace player))
+      |> parseMoves  
+      
 
 generateMoves : Space -> Grid -> Maybe (Grid, (List Space))
 generateMoves space grid =
@@ -151,7 +178,7 @@ generateMoves space grid =
                             rookMoves player space grid
 
                         Knight player ->
-                            Nothing
+                            knightMoves player space grid
 
                         Bishop player ->
                             bishopMoves player space grid
