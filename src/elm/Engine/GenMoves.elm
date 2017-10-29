@@ -8,6 +8,7 @@ import List exposing (..)
 import Types.Pieces exposing (..)
 import Types.Space exposing (..)
 import Types.Player exposing (..)
+import Engine.CheckDirections as D exposing (..)
 
 
 parseMoves : List (Maybe Space) -> Maybe (List Space)
@@ -98,6 +99,31 @@ pawnMoves piece space grid =
                     [ left, center, right ]
 
 
+rookMoves : Player -> Space -> Grid -> Maybe (List Space)
+rookMoves player space grid =
+  let
+    _ = Debug.log "rook moves called!" ""
+    list = Debug.log "rook moves!" (concatMap (checkLine player space grid) [Horizontal, Vertical])
+  in
+    if List.isEmpty list then Nothing else Just list
+    
+
+bishopMoves : Player -> Space -> Grid -> Maybe (List Space)
+bishopMoves player space grid =
+  let
+    list = (concatMap (checkLine player space grid) [PositiveDiagonal, NegativeDiagonal])
+  in
+    if List.isEmpty list then Nothing else Just list
+
+
+queenMoves : Player -> Space -> Grid -> Maybe (List Space)
+queenMoves player space grid =
+  let
+    list = (concatMap (checkLine player space grid) [PositiveDiagonal, NegativeDiagonal, Horizontal, Vertical])
+  in
+    if List.isEmpty list then Nothing else Just list
+
+
 generateMoves : Space -> Grid -> Maybe (Grid, (List Space))
 generateMoves space grid =
     case space.piece of
@@ -114,16 +140,16 @@ generateMoves space grid =
                                 |> parseMoves
 
                         Rook player ->
-                            Nothing
+                            rookMoves player space grid
 
                         Knight player ->
                             Nothing
 
                         Bishop player ->
-                            Nothing
+                            bishopMoves player space grid
 
                         Queen player ->
-                            Nothing
+                            queenMoves player space grid
 
                         King player ->
                             Nothing

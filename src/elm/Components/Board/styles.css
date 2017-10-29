@@ -31,4 +31,8 @@
     float: left;
     list-style: none;
     text-align: center;
+    padding: 1.5% 0;
+}
+
+.gird > ul > li > img {
 }
