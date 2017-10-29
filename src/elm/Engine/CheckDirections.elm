@@ -14,6 +14,7 @@ import Engine.Utils exposing(..)
 
 --TODO fix bug where list of moves will `jump` over a piece that should block it
 
+--TODO export just the Line type and the checkLine function
 
 type Direction 
   = North 
@@ -30,6 +31,7 @@ type Line
   | Horizontal 
   | PositiveDiagonal 
   | NegativeDiagonal
+
 
 adder : Player -> Maybe Space -> List Space -> List Space
 adder player space spcs =
