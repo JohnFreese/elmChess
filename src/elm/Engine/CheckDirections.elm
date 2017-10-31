@@ -1,18 +1,11 @@
 module Engine.CheckDirections exposing (..)
 
-import Debug exposing(..)
 import Maybe exposing (..)
 import Array2D exposing (..)
 import List exposing (..)
-import Types.Pieces exposing (..)
 import Types.Space exposing (..)
 import Types.Player exposing (..)
 import Engine.Utils exposing(..)
-
---TODO fix bug bug where `adder` doesn't add spaces with enemy pieces to the
--- list of moves
-
---TODO fix bug where list of moves will `jump` over a piece that should block it
 
 --TODO export just the Line type and the checkLine function
 
@@ -78,23 +71,26 @@ p_checkLine player first second grid spaces line =
           |> adder player first 
           |> adder player second
 
-      nextFirst = 
-        case line of
-          Vertical -> increment first South grid
-          Horizontal -> increment first West grid
-          PositiveDiagonal -> increment first SouthWest grid
-          NegativeDiagonal -> increment first NorthWest grid
+      nextFirst = if firstBool
+        then
+          case line of
+            Vertical -> increment first South grid
+            Horizontal -> increment first West grid
+            PositiveDiagonal -> increment first SouthWest grid
+            NegativeDiagonal -> increment first NorthWest grid
+        else Nothing
 
-      nextSecond =
-        case line of
-          Vertical -> increment second North grid
-          Horizontal -> increment second East grid
-          PositiveDiagonal -> increment second NorthEast grid
-          NegativeDiagonal -> increment second SouthEast grid
-          
+      nextSecond = if secondBool
+        then
+          case line of
+            Vertical -> increment second North grid
+            Horizontal -> increment second East grid
+            PositiveDiagonal -> increment second NorthEast grid
+            NegativeDiagonal -> increment second SouthEast grid
+        else Nothing
   in
     if (not firstBool) && (not secondBool)
-      then spaces
+      then newSpaces
     else p_checkLine player nextFirst nextSecond grid newSpaces line
       
 
