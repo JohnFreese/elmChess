@@ -49,7 +49,7 @@ generateSrc piece =
             (baseClass player) ++ "Rook.png"
 
         Knight player ->
-            (baseClass player) ++ "King.png"
+            (baseClass player) ++ "Knight.png"
 
         Bishop player ->
             (baseClass player) ++ "Bishop.png"

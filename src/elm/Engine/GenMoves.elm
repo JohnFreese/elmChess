@@ -1,13 +1,12 @@
 module Engine.GenMoves exposing (..)
 
 import Engine.Utils exposing (movesToGrid)
-import Debug exposing (..)
 import Maybe exposing (..)
-import Array2D exposing (..)
 import List exposing (..)
 import Types.Pieces exposing (..)
 import Types.Space exposing (..)
 import Types.Player exposing (..)
+import Engine.CheckDirections as D exposing (..)
 
 
 parseMoves : List (Maybe Space) -> Maybe (List Space)
@@ -26,23 +25,6 @@ checkSpace : Player -> Space -> Maybe Space
 checkSpace player space =
     case space.piece of
         Nothing ->
-            Just space
-
-        Just piece ->
-            if (getOwner piece).colour == player.colour then
-                Nothing
-            else
-                Just space
-
-
-
---PAWNS LEFT AND RIGHT SPACES ONLY
-
-
-tempCheckSpace : Player -> Space -> Maybe Space
-tempCheckSpace player space =
-    case space.piece of
-        Nothing ->
             Nothing
 
         Just piece ->
@@ -54,49 +36,92 @@ tempCheckSpace player space =
 
 pawnMoves : Piece -> Space -> Grid -> List (Maybe Space)
 pawnMoves piece space grid =
-    let
-        (Coordinate row column) =
-            space.location
+  let
+      curriedInc = \d -> increment (Just space) d grid
 
-        tempCurryCheck =
-            tempCheckSpace (getOwner piece)
+      directionPipe = \direction ->
+        direction
+          |> curriedInc
+          |> andThen (checkSpace (getOwner piece))
 
-        curryCheck =
-            checkSpace (getOwner piece)
-    in
-        case (getOwner piece).colour of
-            White ->
-                let
-                    left =
-                        get (row - 1) (column - 1) grid
-                            |> andThen tempCurryCheck
+      emptyOrBust = \spc -> 
+        case spc.piece of
+          Nothing -> Just spc
+          Just pc -> Nothing
 
-                    center =
-                        get (row - 1) (column) grid
-                            |> andThen curryCheck
+      north = (curriedInc North) |> andThen emptyOrBust
+      south = (curriedInc South) |> andThen emptyOrBust
+  in
+    case (getOwner piece).colour of
+      White ->
+        [NorthEast, NorthWest]
+          |> List.map directionPipe
+          |> (::) north
+      Black->
+        [South, SouthEast, SouthWest]
+          |> List.map directionPipe
+          |> (::) south
 
-                    right =
-                        get (row - 1) (column + 1) grid
-                            |> andThen tempCurryCheck
-                in
-                    [ left, center, right ]
 
-            Black ->
-                let
-                    left =
-                        get (row + 1) (column + 1) grid
-                            |> andThen tempCurryCheck
+rookMoves : Player -> Space -> Grid -> Maybe (List Space)
+rookMoves player space grid =
+  let
+    list = (concatMap (checkLine player space grid) [Horizontal, Vertical])
+  in
+    if List.isEmpty list then Nothing else Just list
+    
 
-                    center =
-                        get (row + 1) column grid
-                            |> andThen curryCheck
+bishopMoves : Player -> Space -> Grid -> Maybe (List Space)
+bishopMoves player space grid =
+  let
+    list = (concatMap (checkLine player space grid) [PositiveDiagonal, NegativeDiagonal])
+  in
+    if List.isEmpty list then Nothing else Just list
 
-                    right =
-                        get (row + 1) (column - 1) grid
-                            |> andThen tempCurryCheck
-                in
-                    [ left, center, right ]
 
+queenMoves : Player -> Space -> Grid -> Maybe (List Space)
+queenMoves player space grid =
+  let
+    list = (concatMap (checkLine player space grid) [PositiveDiagonal, NegativeDiagonal, Horizontal, Vertical])
+  in
+    if List.isEmpty list then Nothing else Just list
+
+
+kingMoves : Player -> Space -> Grid -> Maybe (List Space)
+kingMoves player space grid =
+  [North, South, East, West, NorthEast, NorthWest, SouthEast, SouthWest]
+    |> List.map (\d -> increment (Just space) d grid)
+    |> List.map (andThen (checkSpace player))
+    |> parseMoves
+      
+
+knightMoves : Player -> Space -> Grid -> Maybe (List Space)
+knightMoves player space grid =
+  let
+      northPole = Just space 
+        |> \s -> increment s North grid 
+        |> \s -> increment s North grid 
+
+      southPole = Just space
+        |> \s -> increment s South grid
+        |> \s -> increment s South grid
+
+      eastPole = Just space
+        |> \s -> increment s East grid
+        |> \s -> increment s East grid
+
+      westPole = Just space
+        |> \s -> increment s West grid
+        |> \s -> increment s West grid
+
+      incrementEW = \spc -> List.map (\dir -> increment spc dir grid) [East, West]
+      incrementNS = \spc -> List.map (\dir -> increment spc dir grid) [North, South]
+  in
+    [(incrementEW northPole), (incrementEW southPole), (incrementNS eastPole), (incrementNS westPole)]
+      |> concatMap identity
+      |> List.map (andThen (checkSpace player))
+      |> parseMoves  
+      
 
 generateMoves : Space -> Grid -> Maybe (Grid, (List Space))
 generateMoves space grid =
@@ -114,19 +139,19 @@ generateMoves space grid =
                                 |> parseMoves
 
                         Rook player ->
-                            Nothing
+                            rookMoves player space grid
 
                         Knight player ->
-                            Nothing
+                            knightMoves player space grid
 
                         Bishop player ->
-                            Nothing
+                            bishopMoves player space grid
 
                         Queen player ->
-                            Nothing
+                            queenMoves player space grid
 
                         King player ->
-                            Nothing
+                            kingMoves player space grid
             in
                 case moves of
                     Nothing ->

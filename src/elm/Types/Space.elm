@@ -34,3 +34,9 @@ type alias Space =
 --Somewhere
 type alias Grid
     = Array2D Space
+
+emptySpace : Space -> Bool
+emptySpace space =
+ case space.piece of
+    Nothing -> True
+    Just space -> False

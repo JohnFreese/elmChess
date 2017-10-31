@@ -6,6 +6,19 @@ import Types.Pieces exposing (..)
 import Types.Space exposing (..)
 import Types.Player exposing (..)
 
+checkSpace : Player -> Space -> Maybe Space
+checkSpace player space =
+    case space.piece of
+        Nothing ->
+            Just space
+
+        Just piece ->
+            if (getOwner piece).colour == player.colour then
+                Nothing
+            else
+                Just space
+                
+
 toggleSpaces : Bool -> List Space -> Grid -> Grid
 toggleSpaces flag spaces grid =
     case spaces of
