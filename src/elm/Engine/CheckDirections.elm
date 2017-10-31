@@ -1,19 +1,13 @@
 module Engine.CheckDirections exposing (..)
 
-import Debug exposing(..)
 import Maybe exposing (..)
 import Array2D exposing (..)
 import List exposing (..)
-import Types.Pieces exposing (..)
 import Types.Space exposing (..)
 import Types.Player exposing (..)
 import Engine.Utils exposing(..)
 
---TODO fix bug bug where `adder` doesn't add spaces with enemy pieces to the
--- list of moves
-
---TODO fix bug where list of moves will `jump` over a piece that should block it
-
+--TODO export just the Line type and the checkLine function
 
 type Direction 
   = North 
@@ -30,6 +24,7 @@ type Line
   | Horizontal 
   | PositiveDiagonal 
   | NegativeDiagonal
+
 
 adder : Player -> Maybe Space -> List Space -> List Space
 adder player space spcs =
@@ -55,15 +50,15 @@ increment space direction grid =
       let
           (Coordinate row col) = spc.location
       in
-        case direction of 
-          North -> get row (col - 1) grid
-          South -> get row (col + 1) grid
-          West -> get (row - 1) col grid 
-          East -> get (row + 1) col grid
-          NorthEast -> get (row + 1) (col - 1) grid
-          NorthWest -> get (row - 1) (col - 1) grid
-          SouthEast -> get (row + 1) (col + 1) grid
-          SouthWest -> get (row - 1) (col + 1) grid
+        case direction of
+          North -> get (row - 1) col grid
+          South -> get (row + 1) col grid
+          West -> get row (col - 1) grid 
+          East -> get row (col + 1) grid
+          NorthEast -> get (row - 1) (col - 1) grid
+          NorthWest -> get (row - 1) (col + 1) grid
+          SouthEast -> get (row + 1) (col - 1) grid
+          SouthWest -> get (row + 1) (col + 1) grid 
 
 p_checkLine : Player -> Maybe Space -> Maybe Space -> Grid -> List Space -> Line -> List Space
 p_checkLine player first second grid spaces line =
@@ -76,23 +71,26 @@ p_checkLine player first second grid spaces line =
           |> adder player first 
           |> adder player second
 
-      nextFirst = 
-        case line of
-          Vertical -> increment first South grid
-          Horizontal -> increment first West grid
-          PositiveDiagonal -> increment first SouthWest grid
-          NegativeDiagonal -> increment first NorthWest grid
+      nextFirst = if firstBool
+        then
+          case line of
+            Vertical -> increment first South grid
+            Horizontal -> increment first West grid
+            PositiveDiagonal -> increment first SouthWest grid
+            NegativeDiagonal -> increment first NorthWest grid
+        else Nothing
 
-      nextSecond =
-        case line of
-          Vertical -> increment second North grid
-          Horizontal -> increment second East grid
-          PositiveDiagonal -> increment second NorthEast grid
-          NegativeDiagonal -> increment second SouthEast grid
-          
+      nextSecond = if secondBool
+        then
+          case line of
+            Vertical -> increment second North grid
+            Horizontal -> increment second East grid
+            PositiveDiagonal -> increment second NorthEast grid
+            NegativeDiagonal -> increment second SouthEast grid
+        else Nothing
   in
     if (not firstBool) && (not secondBool)
-      then spaces
+      then newSpaces
     else p_checkLine player nextFirst nextSecond grid newSpaces line
       
 
@@ -114,3 +112,6 @@ checkLine player space grid line =
           NegativeDiagonal -> increment (Just space) SouthEast grid
   in
     p_checkLine player first second grid [] line
+
+
+    
