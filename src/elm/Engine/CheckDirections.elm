@@ -112,3 +112,6 @@ checkLine player space grid line =
           NegativeDiagonal -> increment (Just space) SouthEast grid
   in
     p_checkLine player first second grid [] line
+
+
+    
