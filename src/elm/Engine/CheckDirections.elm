@@ -50,15 +50,15 @@ increment space direction grid =
       let
           (Coordinate row col) = spc.location
       in
-        case direction of 
-          North -> get row (col - 1) grid
-          South -> get row (col + 1) grid
+        case direction of
+          North -> get (row - 1) col grid
+          South -> get (row + 1) col grid
           West -> get (row - 1) col grid 
           East -> get (row + 1) col grid
-          NorthEast -> get (row + 1) (col - 1) grid
-          NorthWest -> get (row - 1) (col - 1) grid
-          SouthEast -> get (row + 1) (col + 1) grid
-          SouthWest -> get (row - 1) (col + 1) grid
+          NorthEast -> get (row - 1) (col - 1) grid
+          NorthWest -> get (row - 1) (col + 1) grid
+          SouthEast -> get (row + 1) (col - 1) grid
+          SouthWest -> get (row + 1) (col + 1) grid 
 
 p_checkLine : Player -> Maybe Space -> Maybe Space -> Grid -> List Space -> Line -> List Space
 p_checkLine player first second grid spaces line =
