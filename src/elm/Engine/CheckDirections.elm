@@ -53,8 +53,8 @@ increment space direction grid =
         case direction of
           North -> get (row - 1) col grid
           South -> get (row + 1) col grid
-          West -> get (row - 1) col grid 
-          East -> get (row + 1) col grid
+          West -> get row (col - 1) grid 
+          East -> get row (col + 1) grid
           NorthEast -> get (row - 1) (col - 1) grid
           NorthWest -> get (row - 1) (col + 1) grid
           SouthEast -> get (row + 1) (col - 1) grid

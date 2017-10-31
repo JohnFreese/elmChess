@@ -1,6 +1,6 @@
 module Engine.GenMoves exposing (..)
 
-import Engine.Utils exposing (movesToGrid)
+import Engine.Utils exposing (..)
 import Maybe exposing (..)
 import List exposing (..)
 import Types.Pieces exposing (..)
@@ -20,29 +20,21 @@ parseMoves spaceList =
         else
             Just filteredList
 
-
-checkSpace : Player -> Space -> Maybe Space
-checkSpace player space =
-    case space.piece of
-        Nothing ->
-            Nothing
-
-        Just piece ->
-            if (getOwner piece).colour == player.colour then
-                Nothing
-            else
-                Just space
-
-
 pawnMoves : Piece -> Space -> Grid -> List (Maybe Space)
 pawnMoves piece space grid =
   let
       curriedInc = \d -> increment (Just space) d grid
 
+      player = getOwner piece
+
+      checkFlank : Space -> Maybe Space
+      checkFlank = \spc -> andThen (\pc -> if (getOwner pc).colour == player.colour
+        then Nothing else Just spc) spc.piece
+
       directionPipe = \direction ->
         direction
           |> curriedInc
-          |> andThen (checkSpace (getOwner piece))
+          |> andThen checkFlank
 
       emptyOrBust = \spc -> 
         case spc.piece of
